@@ -16,6 +16,25 @@ class postgres_i
 		}
 	}
 	
+	/*
+	テーブル作成用
+	引数：無
+	戻り値：Error message
+	*/
+	function create_table(){
+		$query = "CREATE TABLE";
+		$query .= "";
+		pg_query($dbconn_book, $query);
+		$error = pg_last_error($dbconn_book)."\n\n";
+		
+		$query = "";
+		$query .= "";
+		pg_query($dbconn_borrow, $query);
+		$error .= pg_last_error($dbconn_borrow)."\n";
+		
+		return $error;
+	}
+	
 	function db_close(){
 		pg_close($dbconn_book);
 		pg_close($dbconn_borrow);
