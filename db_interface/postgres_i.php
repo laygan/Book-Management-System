@@ -1,18 +1,24 @@
 <?php
 class postgres_i
 {
-	$db_name, $dbconn;
-	function __construct($tmp){
-		$db_name = $tmp;
+	function __construct(){
+		global $dbconn_book;
+		global $dbcon_borrow;
 	}
 	
 	function db_connect(){
-		$dbconn = pg_connect("dbname=mary");
-		if(! $dbconn){
+		$dbconn_book = pg_connect("dbname=book");
+		$dbconn_borrow = pg_connect("dbname=borrow");
+		if(! $dbconn_book | $dbconn_borrow){
 			return false;
 		}else{
 			return true;
 		}
+	}
+	
+	function db_close(){
+		pg_close($dbconn_book);
+		pg_close($dbconn_borrow);
 	}
 	
 	/*
@@ -21,7 +27,7 @@ class postgres_i
 	戻り値：正常完了：true, 異常終了：false
 	*/
 	function setbook($book){
-		
+			
 	}
 	
 	/*
