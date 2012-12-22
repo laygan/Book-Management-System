@@ -1,10 +1,24 @@
 <?php
-class postgres_i
+/*
+	PostgreSQL Interface
+*/
+interface db_connector
 {
-	function __construct(){
-		global $dbconn_book;
-		global $dbcon_borrow;
-	}
+	function db_connect();
+	function create_table();
+	function db_close();
+	function setbook(array $book);
+	function find($isbn);
+	function rmbook($isbn);
+	function borrow($isbn, $user);
+	function repayment($isbn, $user);
+	function lending();
+}
+
+class postgres_i implements db_connector
+{
+	private $dbconn_book;
+	private $dbcon_borrow;
 	
 	function db_connect(){
 		$dbconn_book = pg_connect("dbname=book");
@@ -45,7 +59,7 @@ class postgres_i
 	引数：登録するデータの配列
 	戻り値：正常完了：true, 異常終了：false
 	*/
-	function setbook($book){
+	function setbook(array $book){
 			
 	}
 	
@@ -69,19 +83,19 @@ class postgres_i
 	
 	/*
 	本を貸出
-	引数：isbn
+	引数：isbn,user id
 	戻り値：正常完了：true, 異常終了：false
 	*/
-	function borrow($isbn){
+	function borrow($isbn, $user){
 		
 	}
 	
 	/*
 	本の返却
-	引数：isbn
+	引数：isbn,user id
 	戻り値：正常完了：true, 異常終了：false
 	*/
-	function repayment($isbn){
+	function repayment($isbn, $user){
 		
 	}
 	
