@@ -168,9 +168,9 @@ class postgres_i implements db_connector
 		if(pg_num_rows($value) == 0) return 0;	//検索結果NULL？
 		
 		for($i=0; $i<pg_num_rows($value); $i++){
-			data[] = pg_fetch_row($value, $i);
+			$data[] = pg_fetch_row($value, $i);
 		}
-		return data;
+		return $data;
 	}
 }
 
