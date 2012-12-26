@@ -15,7 +15,7 @@ interface db_connector
 	引数：登録するデータの配列
 	戻り値：正常完了：true, 異常終了：false
 	*/
-	function setbook(array $book);
+	function setbook($book);
 	
 	/*
 	本の冊数をアップデートする
@@ -80,18 +80,18 @@ class postgres_i implements db_connector
 		pg_close($dbconn);
 	}
 	
-	function setbook(array $book){
+	function setbook($book){
 		global $dbconn;
 		
 		//ここに処理が来た時点で未登録書籍であること
 		$query = "INSERT INTO bookshelf(ISBN, URL, Image, Author, PubDate, Title, amount)";
-		$query .= "VALUES ('". $book->Items->Item->ItemAttributes->ISBN ."',";
-		$query .= "'". $book->Items->Item->DetailPageURL ."',";
-		$query .= "'". $book->Items->Item->LargeImage->URL ."',";
-		$query .= "'". $book->Items->Item->ItemAttributes->Author ."',";
-		$query .= "'". $book->Items->Item->ItemAttributes->PublicationDate ."',";
-		$query .= "'". $book->Items->Item->ItemAttributes->Title ."',";
-		$query .= "0);";
+	/* 0 */	$query .= "VALUES ('". $book[0] ."',";	//ISBN(13)
+	/* 1 */	$query .= "'". $book[1] ."',";		//Amazon URL
+	/* 2 */	$query .= "'". $book[2] ."',";		//写真URL
+	/* 3 */	$query .= "'". $book[3] ."',";		//著者
+	/* 4 */	$query .= "'". $book[4] ."',";		//出版日
+	/* 5 */	$query .= "'". $book[5] ."',";		//タイトル
+	/* 6 */	$query .= "1);";			//本の冊数
 		
 		pg_query($dbconn, $query);
 		return pg_last_error($dbconn);
@@ -113,10 +113,13 @@ class postgres_i implements db_connector
 		global $dbconn;
 		
 		$value = pg_query($dbconn, "SELECT * FROM bookshelf WHERE ISBN='{$isbn}';");
-		if($value == NULL){	//検索結果NULL？
+		if(pg_num_rows($value) == 0){	//検索結果NULL？
 			return false;
 		} else {
-		return pg_fetch_row($value, 0);
+			for($i=0; $i<pg_num_rows($value); $i++){
+				$data = pg_fetch_row($value, $i);
+			}
+			return $data;
 		}
 	}
 	
@@ -151,12 +154,17 @@ class postgres_i implements db_connector
 		global $dbconn;
 		
 		$value = pg_query($dbconn, "SELECT ID, ISBN, bDate FROM borrows WHERE rDate=NULL");
-		if(pg_num_rows($value) == 0) return 0;	//検索結果NULL？
-		
-		for($i=0; $i<pg_num_rows($value); $i++){
-			$data[] = pg_fetch_row($value, $i);
+		if(pg_num_rows($value) == 0){	//検索結果NULL？
+			return 0;
+			exit();
+		} else {
+			for($i=0; $i<pg_num_rows($value); $i++){
+				$data[] = pg_fetch_row($value, $i);
+			}
+			return $data;
 		}
-		return $data;
 	}
 }
+?>
+
 

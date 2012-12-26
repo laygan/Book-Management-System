@@ -17,8 +17,8 @@ class amazon
 				'Version' => '2011-08-01',
 				'Operation' => 'ItemSearch',
 				'ResponseGroup' => 'ItemAttributes,Images',
-				'SearchIndex' => $SearchIndex,
-				'Keywords' => 'Books',
+				'SearchIndex' => 'Books',
+				'Keywords' => $keyword,
 				'AssociateTag' => 'appasoc-22',
 				'Timestamp' => gmdate('Y-m-d\TH:i:s\Z') );
 		
@@ -43,7 +43,16 @@ class amazon
 		// ハッシュ済みパラメータとシグネチャを結合
 		$url = $baseurl.'?'.$canonical_string.'&Signature='.rawurlencode($signature);
 		
-		return  simplexml_load_file($url);
+		$xml = simplexml_load_file($url);
+		
+		$data[] = $xml->Items->Item->ItemAttributes->ISBN;
+		$data[] = $xml->Items->Item->DetailPageURL;
+		$data[] = $xml->Items->Item->LargeImage->URL;
+		$data[] = $xml->Items->Item->ItemAttributes->Author;
+		$data[] = $xml->Items->Item->ItemAttributes->PublicationDate;
+		$data[] = $xml->Items->Item->ItemAttributes->Title;
+		
+		return $data;
 	}
 }
 ?>
