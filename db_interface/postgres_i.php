@@ -8,13 +8,6 @@ interface db_connector
 {
 	function db_connect();
 	
-	/*
-	テーブル作成用
-	引数：無
-	戻り値：Error message
-	*/
-	function create_table();
-	
 	function db_close();
 	
 	/*
@@ -67,50 +60,29 @@ interface db_connector
 	function lending();
 }
 
+$dbconn="";
+
 class postgres_i implements db_connector
 {
-	private $dbconn_book;
-	private $dbconn_borrow;
-	
 	function db_connect(){
-		$dbconn_book = pg_connect("dbname=bookshelf");
-		$dbconn_borrow = pg_connect("dbname=borrows");
-		if(! $dbconn_book | $dbconn_borrow){
+		global $dbconn;
+		$dbconn = pg_connect("host=localhost user=postgres dbname=postgres");
+		if(!$dbconn){
+			exit("DB Connection faild!");
 			return false;
 		}else{
 			return true;
 		}
 	}
 	
-	function create_table(){
-		$query = "CREATE TABLE bookshelf(";
-		$query .= "ISBN varchar(13) PRIMARY KEY,";
-		$query .= "URL varchar(500),";
-		$query .= "Image varchar(100),";
-		$query .= "Author varchar(100),";
-		$query .= "PubDate varchar(10),";
-		$query .= "Title varchar(100),";
-		$query .= "amount int);";
-		pg_query($dbconn_book, $query);
-		$error = pg_last_error($dbconn_book)."\n\n";
-		
-		$query = "CREATE TABLE borrows(";
-		$query .= "ID varchar(20),";
-		$query .= "ISBN varchar(13) UNIQUE,";
-		$query .= "bDate date,";
-		$query .= "rDate date);";
-		pg_query($dbconn_borrow, $query);
-		$error .= pg_last_error($dbconn_borrow)."\n";
-		
-		return $error;
-	}
-	
 	function db_close(){
-		pg_close($dbconn_book);
-		pg_close($dbconn_borrow);
+		global $dbconn;
+		pg_close($dbconn);
 	}
 	
 	function setbook(array $book){
+		global $dbconn;
+		
 		//ここに処理が来た時点で未登録書籍であること
 		$query = "INSERT INTO bookshelf(ISBN, URL, Image, Author, PubDate, Title, amount)";
 		$query .= "VALUES ('". $book->Items->Item->ItemAttributes->ISBN ."',";
@@ -121,50 +93,64 @@ class postgres_i implements db_connector
 		$query .= "'". $book->Items->Item->ItemAttributes->Title ."',";
 		$query .= "0);";
 		
-		pg_query($dbconn_book, $query);
-		return pg_last_error($dbconn_book);
+		pg_query($dbconn, $query);
+		return pg_last_error($dbconn);
 	}
 	
 	function addbook($isbn){
+		global $dbconn;
+		
 		//ここに処理が来た時点で登録済みの書籍であること
 		$data = find($isbn);
 		//冊数加算
 		$data[6] ++;
 		
-		pg_query($dbconn_book, "UPDATE bookshelf SET amount={$data[6]} WHERE ISBN='{$isbn}';");
-		return pg_last_error($dbconn_book);
+		pg_query($dbconn, "UPDATE bookshelf SET amount={$data[6]} WHERE ISBN='{$isbn}';");
+		return pg_last_error($dbconn);
 	}
 	
 	function find($isbn){
-		$value = pg_query($dbconn_book, "SELECT * FROM bookshelf WHERE ISBN='{$isbn}';");
-		if(pg_num_rows($value) == 0) return 0;	//検索結果NULL？
+		global $dbconn;
 		
+		$value = pg_query($dbconn, "SELECT * FROM bookshelf WHERE ISBN='{$isbn}';");
+		if($value == NULL){	//検索結果NULL？
+			return false;
+		} else {
 		return pg_fetch_row($value, 0);
+		}
 	}
 	
 	function rmbook($isbn){
-		pg_query($dbconn_book, "DELETE FROM bookshelf WHERE ISBN='{$isbn}';");
-		return pg_last_error($dbconn_book);
+		global $dbconn;
+		
+		pg_query($dbconn, "DELETE FROM bookshelf WHERE ISBN='{$isbn}';");
+		return pg_last_error($dbconn);
 	}
 	
 	function borrow($isbn, $user){
+		global $dbconn;
+		
 		//ここに処理が来た時点で登録済みかつ、貸出中でない書籍であること
 		$query = "INSERT INTO borrows(ID, ISBN, bDate, rDate)";
 		$query .= "VALUES ('{$user}', '{$isbn}',";
 		$query .= "'". date("Y-m-d") ."', NULL);";
 		
-		pg_query($dbconn_borrow, $query);
-		return pg_last_error($dbconn_borrow);
+		pg_query($dbconn, $query);
+		return pg_last_error($dbconn);
 	}
 	
 	function repayment($isbn, $user){
+		global $dbconn;
+		
 		$rdate = date("Y-m-d");
-		pg_query($dbconn_book, "UPDATE borrows SET rDate='{$rdate}' WHERE ISBN='{$isbn}' AND ID='{$user}';");
-		return pg_last_error($dbconn_book);
+		pg_query($dbconn, "UPDATE borrows SET rDate='{$rdate}' WHERE ISBN='{$isbn}' AND ID='{$user}';");
+		return pg_last_error($dbconn);
 	}
 	
 	function lending(){
-		$value = pg_query($dbconn_borrow, "SELECT ID, ISBN, bDate FROM borrows WHERE rDate=NULL");
+		global $dbconn;
+		
+		$value = pg_query($dbconn, "SELECT ID, ISBN, bDate FROM borrows WHERE rDate=NULL");
 		if(pg_num_rows($value) == 0) return 0;	//検索結果NULL？
 		
 		for($i=0; $i<pg_num_rows($value); $i++){
