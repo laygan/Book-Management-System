@@ -106,6 +106,7 @@ class draw{
 		if($sw){
 			$query .= "<form action='' method='post'>\n";
 			$query .= "<input type='hidden' name='screen' value='add'>\n";
+			$query .= "<input type='hidden' name='aisbn' value='{$data[0]}'>\n";
 			$query .= "<input type='submit' value='冊数を増やす'>\n";
 			$query .= "</form>\n";
 		}

@@ -99,9 +99,8 @@ class postgres_i implements db_connector
 	
 	function addbook($isbn){
 		global $dbconn;
-		
 		//ここに処理が来た時点で登録済みの書籍であること
-		$data = find($isbn);
+		$data = $this->find($isbn);
 		//冊数加算
 		$data[6] ++;
 		
@@ -111,7 +110,6 @@ class postgres_i implements db_connector
 	
 	function find($isbn){
 		global $dbconn;
-		
 		$value = pg_query($dbconn, "SELECT * FROM bookshelf WHERE ISBN='{$isbn}';");
 		if(pg_num_rows($value) == 0){	//検索結果NULL？
 			return false;

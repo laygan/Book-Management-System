@@ -23,16 +23,19 @@
 		setter(false);
 	}
 	
+	else if($_POST["screen"] == "sop"){
+		setter(true);
+	}
+	
 	else if($_POST["screen"] == "add"){
 		$pr = new draw();
 		$db = new postgres_i();
-		
-		$db->db_connect();
-		$db->setbook();
-	}
-	
-	else if($_POST["screen"] == "sop"){
-		setter(true);
+		if(! $db->addbook($_POST["aisbn"])){
+			$pr->info("冊数の追加が完了しました。");
+		} else {
+			$pr->error("冊数を追加できませんでした。");
+		}
+		$db->db_close();
 	}
 	
 	else{
@@ -99,7 +102,8 @@
 			}
 		} else {
 			if($sp){
-				$pr->info("この本は登録済みです。");
+				$db->addbook($isbn);
+				$pr->info("この本は登録済みのため、本の冊数を追加しました。");
 			} else {
 				//戻り値を表示へ
 				$pr->result($data, true);
