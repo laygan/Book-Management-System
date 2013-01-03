@@ -37,6 +37,22 @@
 		}
 		$db->db_close();
 	}
+    
+    else if($_POST["screen"] == "set"){
+        $pr = new draw();
+        $db = new postgres_i();
+        
+        for($i=0; $i<6; $i++){  //formデータを配列に格納する
+            $data[] = $_POST{"sdata[".$i."]"};
+        }
+        
+        $retu = $db->setbook($data);
+        if(! $retu){
+            $pr->info("本棚にしまいました。");
+        } else {
+            $pr->error("データベースに登録できませんでした。<br>".$retu);
+        }
+    }
 	
 	else{
 		
@@ -91,22 +107,19 @@
 			$am = new amazon();
 			$data = $am->search($isbn);
 			$data[0] = isbn_checker($data[0]);
-			if(! $db->setbook($data)){
-				if($sp){
-					$pr->result($data, false, true);
-				} else {
-					$pr->result($data, false, false);
-				}
-			} else {
-				$pr->error("データベース手続きが失敗しました。");
-			}
+            if($sp){
+                $pr->result($data, false, true);
+            } else {
+                $pr->result($data, false, false);
+            }
+			
 		} else {
 			if($sp){
 				$db->addbook($isbn);
 				$pr->info("この本は登録済みのため、本の冊数を追加しました。");
 			} else {
 				//戻り値を表示へ
-				$pr->result($data, true);
+				$pr->result($data, true, false);
 			}
 		}
 		$db->db_close();

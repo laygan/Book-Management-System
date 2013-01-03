@@ -72,8 +72,8 @@ class draw{
 
 	function result($data, $sw, $fast){
 		global $query;
-		if($fast){
-			//初期画面を出力
+        
+		if($fast){  //連続追加時の自動転送metaタグ付加
 			$query  = "<!DOCTYPE html>\n";
 			$query .= "<html lang='ja'>\n";
 			$query .= "<head>\n";
@@ -103,14 +103,24 @@ class draw{
 		$query .= "著者：". $data[3]. "<br>\n";
 		$query .= "出版日：". $data[4]. "</h3>\n";
 		
-		if($sw){
-			$query .= "<form action='' method='post'>\n";
+        
+        $query .= "<form action='' method='post'>\n";
+		if($sw){    　//登録済み書籍の場合：冊数追加ボタンの表示
 			$query .= "<input type='hidden' name='screen' value='add'>\n";
 			$query .= "<input type='hidden' name='aisbn' value='{$data[0]}'>\n";
-			$query .= "<input type='submit' value='冊数を増やす'>\n";
-			$query .= "</form>\n";
-		}
-		
+			$query .= "<input type='submit' value='この本の冊数を増やす'>\n";
+        } else {      //登録されていない書籍の場合：登録ボタンの表示
+            $query .= "<input type='hidden' name='screen' value='set'>\n";
+            $query .= "<input type='hidden' name='sdata[0]' value='{$data[0]}'>\n";
+            $query .= "<input type='hidden' name='sdata[1]' value='{$data[1]}'>\n";
+            $query .= "<input type='hidden' name='sdata[2]' value='{$data[2]}'>\n";
+            $query .= "<input type='hidden' name='sdata[3]' value='{$data[3]}'>\n";
+            $query .= "<input type='hidden' name='sdata[4]' value='{$data[4]}'>\n";
+            $query .= "<input type='hidden' name='sdata[5]' value='{$data[5]}'>\n";
+            $query .= "<input type='submit' value='この本を本棚に入れる'>\n";
+        }
+		$query .= "</form>\n";
+        
 		$this->footer();
 	}
 	

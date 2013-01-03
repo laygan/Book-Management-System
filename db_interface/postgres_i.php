@@ -93,6 +93,7 @@ class postgres_i implements db_connector
 	/* 5 */	$query .= "'". $book[5] ."',";		//タイトル
 	/* 6 */	$query .= "1);";			//本の冊数
 		
+		echo $query;
 		pg_query($dbconn, $query);
 		return pg_last_error($dbconn);
 	}
