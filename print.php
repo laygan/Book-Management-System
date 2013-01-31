@@ -93,6 +93,7 @@ class draw{
 		} else {
 			$this->base();
 		}
+		
 		//検索結果を出力
 		$query .= "<h1>検索結果</h1>\n";
 		$query .= "<a href='". $data[1] ."' target='_blank'>";
@@ -102,23 +103,23 @@ class draw{
 		$query .= "<h3>ISBN：". $data[0]. "<br>\n";
 		$query .= "著者：". $data[3]. "<br>\n";
 		$query .= "出版日：". $data[4]. "</h3>\n";
-		
         
-        $query .= "<form action='' method='post'>\n";
-		if($sw){    　//登録済み書籍の場合：冊数追加ボタンの表示
+        	$query .= "<form action='' method='post'>\n";
+		if($sw){	//登録済み書籍の場合：冊数追加ボタンの表示
 			$query .= "<input type='hidden' name='screen' value='add'>\n";
 			$query .= "<input type='hidden' name='aisbn' value='{$data[0]}'>\n";
 			$query .= "<input type='submit' value='この本の冊数を増やす'>\n";
-        } else {      //登録されていない書籍の場合：登録ボタンの表示
-            $query .= "<input type='hidden' name='screen' value='set'>\n";
-            $query .= "<input type='hidden' name='sdata[0]' value='{$data[0]}'>\n";
-            $query .= "<input type='hidden' name='sdata[1]' value='{$data[1]}'>\n";
-            $query .= "<input type='hidden' name='sdata[2]' value='{$data[2]}'>\n";
-            $query .= "<input type='hidden' name='sdata[3]' value='{$data[3]}'>\n";
-            $query .= "<input type='hidden' name='sdata[4]' value='{$data[4]}'>\n";
-            $query .= "<input type='hidden' name='sdata[5]' value='{$data[5]}'>\n";
-            $query .= "<input type='submit' value='この本を本棚に入れる'>\n";
-        }
+			
+        	} else {	//登録されていない書籍の場合：登録ボタンの表示
+            		$query .= "<input type='hidden' name='screen' value='set'>\n";
+            		$query .= "<input type='hidden' name='sdata0' value='{$data[0]}'>\n";
+            		$query .= "<input type='hidden' name='sdata1' value='{$data[1]}'>\n";
+            		$query .= "<input type='hidden' name='sdata2' value='{$data[2]}'>\n";
+            		$query .= "<input type='hidden' name='sdata3' value='{$data[3]}'>\n";
+            		$query .= "<input type='hidden' name='sdata4' value='{$data[4]}'>\n";
+            		$query .= "<input type='hidden' name='sdata5' value='{$data[5]}'>\n";
+            		$query .= "<input type='submit' value='この本を本棚に入れる'>\n";
+        	}
 		$query .= "</form>\n";
         
 		$this->footer();

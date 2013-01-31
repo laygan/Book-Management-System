@@ -82,9 +82,9 @@ class postgres_i implements db_connector
 	
 	function setbook($book){
 		global $dbconn;
-		
+		$this->db_connect();
 		//ここに処理が来た時点で未登録書籍であること
-		$query = "INSERT INTO bookshelf(ISBN, URL, Image, Author, PubDate, Title, amount)";
+		$query =  "INSERT INTO bookshelf(ISBN, URL, Image, Author, PubDate, Title, amount)";
 	/* 0 */	$query .= "VALUES ('". $book[0] ."',";	//ISBN(13)
 	/* 1 */	$query .= "'". $book[1] ."',";		//Amazon URL
 	/* 2 */	$query .= "'". $book[2] ."',";		//写真URL
@@ -93,8 +93,9 @@ class postgres_i implements db_connector
 	/* 5 */	$query .= "'". $book[5] ."',";		//タイトル
 	/* 6 */	$query .= "1);";			//本の冊数
 		
-		echo $query;
-		pg_query($dbconn, $query);
+		if(! pg_query($dbconn, $query)){
+			echo "ERROR";
+		}
 		return pg_last_error($dbconn);
 	}
 	
@@ -102,6 +103,7 @@ class postgres_i implements db_connector
 		global $dbconn;
 		//ここに処理が来た時点で登録済みの書籍であること
 		$data = $this->find($isbn);
+		
 		//冊数加算
 		$data[6] ++;
 		
@@ -112,7 +114,7 @@ class postgres_i implements db_connector
 	function find($isbn){
 		global $dbconn;
 		$value = pg_query($dbconn, "SELECT * FROM bookshelf WHERE ISBN='{$isbn}';");
-		if(pg_num_rows($value) == 0){	//検索結果NULL？
+		if($value == NULL){	//検索結果NULL？
 			return false;
 		} else {
 			for($i=0; $i<pg_num_rows($value); $i++){

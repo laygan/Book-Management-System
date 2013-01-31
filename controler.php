@@ -43,7 +43,7 @@
         $db = new postgres_i();
         
         for($i=0; $i<6; $i++){  //formデータを配列に格納する
-            $data[] = $_POST{"sdata[".$i."]"};
+            $data[] = $_POST["sdata".$i];
         }
         
         $retu = $db->setbook($data);
@@ -107,11 +107,14 @@
 			$am = new amazon();
 			$data = $am->search($isbn);
 			$data[0] = isbn_checker($data[0]);
-            if($sp){
-                $pr->result($data, false, true);
-            } else {
-                $pr->result($data, false, false);
-            }
+			if(!$db->setbook($data)){
+				$pr->error("登録に失敗しました");
+			}
+            		if($sp){
+				$pr->result($data, false, true);
+			} else {
+				$pr->result($data, false, false);
+			}
 			
 		} else {
 			if($sp){
