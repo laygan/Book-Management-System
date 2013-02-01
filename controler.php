@@ -20,6 +20,11 @@
 			$pr->s_add();
 			exit(0);
 		}
+		else if($_POST["isbn"] == "admin"){
+			$pr = new draw();
+			$pr->adm();
+			exit(0);
+		}
 		setter(false);
 	}
 	
@@ -38,21 +43,29 @@
 		$db->db_close();
 	}
     
-    else if($_POST["screen"] == "set"){
-        $pr = new draw();
-        $db = new postgres_i();
-        
-        for($i=0; $i<6; $i++){  //formデータを配列に格納する
-            $data[] = $_POST["sdata".$i];
-        }
-        
-        $retu = $db->setbook($data);
-        if(! $retu){
-            $pr->info("本棚にしまいました。");
-        } else {
-            $pr->error("データベースに登録できませんでした。<br>".$retu);
-        }
-    }
+	else if($_POST["screen"] == "set"){
+		$pr = new draw();
+		$db = new postgres_i();
+		
+		for($i=0; $i<6; $i++){  //formデータを配列に格納する
+			$data[] = $_POST["sdata".$i];
+		}
+		
+		$retu = $db->setbook($data);
+		if(! $retu){
+		$pr->info("本棚にしまいました。");
+		} else {
+			$pr->error("データベースに登録できませんでした。<br>".$retu);
+		}
+	}
+	
+	//貸出処理
+	else if($_POST["screen"] == "bor"){
+		$pr = new draw();
+		$db = new postgres_i();
+		
+		
+	}
 	
 	else{
 		

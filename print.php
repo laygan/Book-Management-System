@@ -105,12 +105,20 @@ class draw{
 		$query .= "出版日：". $data[4]. "</h3>\n";
         
         	$query .= "<form action='' method='post'>\n";
-		if($sw){	//登録済み書籍の場合：冊数追加ボタンの表示
+		if($sw){	//登録済み書籍の場合：貸出・冊数追加ボタンの表示
+			$query .= "<form action='' method='post'>\n";
+			$query .= "<input type='hidden' name='screen' value='bor'>\n";
+			$query .= "<input type='hidden' name='bisbn' value='{$data[0]}'>\n";
+			$query .= "あなたの識別ID：<input type='text' name='id'>\n";
+			$query .= "<input type='submit' value='この本を借りる'>\n";
+			$query .= "</form><br><br>\n";
+        		$query .= "<form action='' method='post'>\n";
 			$query .= "<input type='hidden' name='screen' value='add'>\n";
 			$query .= "<input type='hidden' name='aisbn' value='{$data[0]}'>\n";
 			$query .= "<input type='submit' value='この本の冊数を増やす'>\n";
 			
         	} else {	//登録されていない書籍の場合：登録ボタンの表示
+        		$query .= "<form action='' method='post'>\n";
             		$query .= "<input type='hidden' name='screen' value='set'>\n";
             		$query .= "<input type='hidden' name='sdata0' value='{$data[0]}'>\n";
             		$query .= "<input type='hidden' name='sdata1' value='{$data[1]}'>\n";
@@ -178,6 +186,30 @@ class draw{
 		
 		$this->footer();
 	}
+	
+	function adm(){
+		global $query;
+		
+		//管理画面
+		$this->base();
+		
+		$query .= "<h1>管理画面</h1>\n";
+		$query .= "<p>メニューを選んでください</p>\n";
+		$query .= "<form action='' method='post'>\n";
+		$query .= "<input type='hidden' name='screen' value='usradd'>\n";
+		$query .= "<input type='submit' value='ユーザの追加'>\n";
+		$query .= "</form>\n";
+		$query .= "<form action='' method='post'>\n";
+		$query .= "<input type='hidden' name='screen' value='rmusr'>\n";
+		$query .= "<input type='submit' value='ユーザの削除'>\n";
+		$query .= "</form>\n";
+		$query .= "<form action='' method='post'>\n";
+		$query .= "<input type='hidden' name='screen' value='brlist'>\n";
+		$query .= "<input type='submit' value='貸出リスト出力'>\n";
+		$query .= "</form>\n";
+		
+		$this->footer();
+	}	
 }
 ?>
 
