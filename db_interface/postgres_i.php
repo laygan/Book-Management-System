@@ -6,8 +6,9 @@
 */
 interface db_connector
 {
-	function db_connect();
-	
+	function __construct();
+	//コンストラクタはデータベースコネクトのため
+		
 	function db_close();
 	
 	/*
@@ -64,14 +65,11 @@ $dbconn="";
 
 class postgres_i implements db_connector
 {
-	function db_connect(){
+	function __construct(){
 		global $dbconn;
 		$dbconn = pg_connect("host=localhost user=postgres dbname=postgres");
 		if(!$dbconn){
 			exit("DB Connection faild!");
-			return false;
-		}else{
-			return true;
 		}
 	}
 	
@@ -82,7 +80,6 @@ class postgres_i implements db_connector
 	
 	function setbook($book){
 		global $dbconn;
-		$this->db_connect();
 		//ここに処理が来た時点で未登録書籍であること
 		$query =  "INSERT INTO bookshelf(ISBN, URL, Image, Author, PubDate, Title, amount)";
 	/* 0 */	$query .= "VALUES ('". $book[0] ."',";	//ISBN(13)
@@ -117,6 +114,7 @@ class postgres_i implements db_connector
 		if($value == NULL){	//検索結果NULL？
 			return false;
 		} else {
+			$data;
 			for($i=0; $i<pg_num_rows($value); $i++){
 				$data = pg_fetch_row($value, $i);
 			}

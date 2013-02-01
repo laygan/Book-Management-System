@@ -90,15 +90,9 @@
 		$pr = new draw();
 		$db = new postgres_i();
 		
-		//データベース接続
-		if(! $db->db_connect()){
-			//データベース接続失敗時
-			$pr->error("データベースに接続できませんでした。");
-			exit(1);
-		} else {
-			//データベースから情報を検索
-			$data = $db->find($isbn);
-		}
+		//データベースから情報を検索
+		$data = $db->find($isbn);
+		
 		
 		//データベースから情報を得たか
 		if(!$data){
