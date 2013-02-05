@@ -2,18 +2,18 @@
 	include_once("amazon.php");
 	include_once(dirname(__FILE__)."/db_interface/postgres_i.php");
 	include_once("print.php");
-	
+
 	if(isset($_GET["mode"])){
 		$pr = new draw();
 		$pr->s_add();
 		exit(0);
 	}
-	
+
 	else if(!isset($_POST["screen"])){
 		$pr = new draw();
 		$pr->home();
 	}
-	
+
 	else if($_POST["screen"] == "top"){
 		if($_POST["isbn"] == "fast"){
 			$pr = new draw();
@@ -27,11 +27,11 @@
 		}
 		setter(false);
 	}
-	
+
 	else if($_POST["screen"] == "sop"){
 		setter(true);
 	}
-	
+
 	else if($_POST["screen"] == "add"){
 		$pr = new draw();
 		$db = new postgres_i();
@@ -42,15 +42,15 @@
 		}
 		$db->db_close();
 	}
-    
+
 	else if($_POST["screen"] == "set"){
 		$pr = new draw();
 		$db = new postgres_i();
-		
+
 		for($i=0; $i<6; $i++){  //formデータを配列に格納する
 			$data[] = $_POST["sdata".$i];
 		}
-		
+
 		$retu = $db->setbook($data);
 		if(! $retu){
 		$pr->info("本棚にしまいました。");
@@ -58,17 +58,17 @@
 			$pr->error("データベースに登録できませんでした。<br>".$retu);
 		}
 	}
-	
+
 	//貸出処理
 	else if($_POST["screen"] == "bor"){
 		$pr = new draw();
 		$db = new postgres_i();
-		
-		
+
+
 	}
-	
+
 	else{
-		
+
 	}
 
 	function isbn_checker($value){
@@ -95,18 +95,18 @@
 			exit(0);
 		}
 	}
-	
+
 	function setter($sp){
 		//ISBN check
 		$isbn = isbn_checker($_POST["isbn"]);
-		
+
 		$pr = new draw();
 		$db = new postgres_i();
-		
+
 		//データベースから情報を検索
 		$data = $db->find($isbn);
-		
-		
+
+
 		//データベースから情報を得たか
 		if(!$data){
 			echo "Powered by Amazon.co.jp";
@@ -114,15 +114,13 @@
 			$am = new amazon();
 			$data = $am->search($isbn);
 			$data[0] = isbn_checker($data[0]);
-			if(!$db->setbook($data)){
-				$pr->error("登録に失敗しました");
-			}
-            		if($sp){
+
+            if($sp){
 				$pr->result($data, false, true);
 			} else {
 				$pr->result($data, false, false);
 			}
-			
+
 		} else {
 			if($sp){
 				$db->addbook($isbn);
