@@ -67,6 +67,27 @@
 
 	}
 
+	//ユーザ追加画面
+	else if($_POST["screen"] == "g_addusr"){
+	    $pr = new draw();
+	    $pr->addusr();
+	}
+
+	//ユーザ追加処理
+	else if($_POST["screen"] == "addusr"){
+	    $pr = new draw();
+	    $db = new postgres_i();
+
+	    echo $db->addusr($_POST["uid"], $_POST["uname"]);
+	    $pr->info("登録が完了しました。");
+	}
+
+    //ユーザ削除画面
+	else if($_POST["screen"] == "g_rmusr"){
+	    $pr = new draw();
+	    $pr->rmusr();
+	}
+
 	else{
 
 	}

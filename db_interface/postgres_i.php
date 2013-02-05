@@ -59,6 +59,13 @@ interface db_connector
 	戻り値：貸出一覧配列
 	*/
 	function lending();
+
+	/*
+	 * 貸出用ユーザID追加
+	 *引数：ID
+	 *戻り値：結果（重複の有無など)
+	 */
+	function addusr($uid, $uname);
 }
 
 $dbconn="";
@@ -162,6 +169,21 @@ class postgres_i implements db_connector
 			}
 			return $data;
 		}
+	}
+
+	function addusr($uid, $uname){
+	    global $dbconn;
+
+	    $value = pg_query($dbconn, "SELECT id FROM br_user WHERE id='{$uid}';");
+	    if(pg_num_rows($value) == 0){
+	        //登録
+	        $value = pg_query($dbconn, "INSERT INTO br_user(id, name) VALUES('{$uid}', '{$uname}');");
+	    }
+	    else{
+	        return 1;
+	    }
+
+	    return pg_last_error($dbconn);
 	}
 }
 ?>
