@@ -53,7 +53,7 @@
 
 		$retu = $db->setbook($data);
 		if(! $retu){
-		$pr->info("本棚にしまいました。");
+		    $pr->info("本棚にしまいました。");
 		} else {
 			$pr->error("データベースに登録できませんでした。<br>".$retu);
 		}
@@ -159,7 +159,13 @@
 			$data[0] = isbn_checker($data[0]);
 
             if($sp){
-				$pr->result($data, false, true);
+                $retu = $db->setbook($data);
+                if(! $retu){
+                    $pr->result($data, false, true);
+                }
+                else{
+                    $pr->error("登録に失敗しました");
+                }
 			} else {
 				$pr->result($data, false, false);
 			}
