@@ -21,6 +21,18 @@ class draw{
 		$query .= "p.badges{ clear:both; text-align:right; }\n";
 		$query .= "img.col{ float:left; }\n";
 		$query .= "</style>\n";
+		$query .= "<script type='text/javascript'>\n";
+		$query .= "<!--\n";
+		$query .= "function check(){\n";
+		$query .= "    if(window.confirm('本当によろしいですか？')){\n";
+		$query .= "        return true;\n";
+		$query .= "    }\n";
+		$query .= "    else{\n";
+		$query .= "        return false;\n";
+		$query .= "    }\n";
+        $query .= "}\n";
+        $query .= "// -->\n";
+        $query .= "</script>\n";
 		$query .= "</head>\n";
 		$query .= "<body>\n";
 		$query .= "<div class='main'><div>\n";
@@ -223,10 +235,10 @@ class draw{
 	    $query .= "<h1>貸出ユーザの追加</h1>\n";
 	    $query .= "<p>貸出の際に必要なユーザを作成します。以下の項目を入力して送信してください。</p>\n";
 	    $query .= "<form action='' method='post'>\n";
-	    $query .= "ユーザID：<input type='text' name='uid'><br>\n";
+	    $query .= "ユーザID：<input type='text' name='uid'><b>必須・５文字以上</b><br>\n";
 	    $query .= "（ユーザを特定するときに使います。利用者はこれを記憶しておく必要があります。）\n";
 	    $query .= "<br><br>\n";
-	    $query .= "あなたの名前：<input type='text' name='uname'><br>\n";
+	    $query .= "あなたの名前：<input type='text' name='uname'><b>必須・５文字以上</b><br>\n";
 	    $query .= "（ページ上で表示されるあなたの名前です。何を入力しても構いません。）<br>\n";
 	    $query .= "<input type='hidden' name='screen' value='addusr'>\n";
 	    $query .= "<input type='submit' value='登録'> <input type='reset' value='リセット'>\n";
@@ -242,7 +254,7 @@ class draw{
 
 	    $query .= "<h1>貸出ユーザの削除</h1>\n";
 	    $query .= "<p>貸出の際に必要なユーザを削除します。以下の項目を入力して送信してください。</p>\n";
-	    $query .= "<form action='' method='post'>\n";
+	    $query .= "<form action='' method='post' onSubmit='return check()'>\n";
 	    $query .= "ユーザID：<input type='text' name='uid'><br>\n";
 	    $query .= "<input type='hidden' name='screen' value='rmusr'>\n";
 	    $query .= "<input type='submit' value='削除'> <input type='reset' value='リセット'>\n";

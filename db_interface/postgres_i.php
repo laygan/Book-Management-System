@@ -171,11 +171,22 @@ class postgres_i implements db_connector
 		}
 	}
 
-	function addusr($uid, $uname){
+	function serach_user($uid){
 	    global $dbconn;
 
 	    $value = pg_query($dbconn, "SELECT id FROM br_user WHERE id='{$uid}';");
-	    if(pg_num_rows($value) == 0){
+
+	    for($i=0; $i<pg_num_rows($value); $i++){
+	        $data[] = pg_fetch_row($value);
+	        return $data;
+	    }
+        return false;
+	}
+
+	function addusr($uid, $uname){
+	    global $dbconn;
+
+	    if($this->serach_user($uid) == false){
 	        //登録
 	        $value = pg_query($dbconn, "INSERT INTO br_user(id, name) VALUES('{$uid}', '{$uname}');");
 	        return true;
@@ -185,6 +196,20 @@ class postgres_i implements db_connector
 	    }
 
 	    return pg_last_error($dbconn);
+	}
+
+	function rmusr($uid){
+	    global $dbconn;
+
+	    $tmp = $this->serach_user($uid);
+
+	    if($tmp == false){
+	        return false;
+	    }
+
+	    else{
+            return pg_query($dbconn, "DELETE FROM br_user WHERE id='{$uid}';");
+	    }
 	}
 }
 ?>

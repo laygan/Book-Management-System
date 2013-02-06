@@ -96,9 +96,23 @@
 	    $pr->rmusr();
 	}
 
-	else{
+	//ユーザ削除処理
+	else if($_POST["screen"] == "rmusr"){
+	    $pr = new draw();
+	    $db = new postgres_i();
 
+	    $tmp = $db->serach_user($_POST["uid"]);
+
+	    if($tmp == false){
+	        $pr->error("ユーザが存在しません");
+	    }
+	    else{
+	        echo $db->rmusr($_POST["uid"]);
+            $pr->info("ユーザを削除しました");
+	    }
 	}
+
+	else{}
 
 	function isbn_checker($value){
 		$tmp = strlen($value);
