@@ -78,8 +78,16 @@
 	    $pr = new draw();
 	    $db = new postgres_i();
 
-	    echo $db->addusr($_POST["uid"], $_POST["uname"]);
-	    $pr->info("登録が完了しました。");
+	    if(mb_strlen($_POST["uid"]) <=4 || mb_strlen($_POST["uname"]) <= 4){
+	        $pr->error("登録に失敗しました。");
+	        exit(0);
+	    }
+	    if($db->addusr($_POST["uid"], $_POST["uname"])){
+	        $pr->info("登録が完了しました。");
+	    }
+	    else{
+	        $pr->error("登録に失敗しました。");
+	    }
 	}
 
     //ユーザ削除画面

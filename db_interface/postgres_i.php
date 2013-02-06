@@ -178,9 +178,10 @@ class postgres_i implements db_connector
 	    if(pg_num_rows($value) == 0){
 	        //登録
 	        $value = pg_query($dbconn, "INSERT INTO br_user(id, name) VALUES('{$uid}', '{$uname}');");
+	        return true;
 	    }
 	    else{
-	        return 1;
+	        return false;
 	    }
 
 	    return pg_last_error($dbconn);
