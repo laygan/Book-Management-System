@@ -9,7 +9,8 @@ interface db_connector
 	function __construct();
 	//コンストラクタはデータベースコネクトのため
 
-	function db_close();
+	function __destruct();
+	//デストラクトはデータベースディスコネクトのため
 
 	/*
 	本の情報をデータベースに登録する
@@ -80,7 +81,7 @@ class postgres_i implements db_connector
 		}
 	}
 
-	function db_close(){
+	function __destruct(){
 		global $dbconn;
 		pg_close($dbconn);
 	}
@@ -106,12 +107,7 @@ class postgres_i implements db_connector
 	function addbook($isbn){
 		global $dbconn;
 		//ここに処理が来た時点で登録済みの書籍であること
-		$data = $this->find($isbn);
-
-		//冊数加算
-		$data[6] ++;
-
-		pg_query($dbconn, "UPDATE bookshelf SET amount={$data[6]} WHERE ISBN='{$isbn}';");
+		pg_query($dbconn, "UPDATE bookshelf SET amount=amount+1 WHERE ISBN='{$isbn}';");
 		return pg_last_error($dbconn);
 	}
 
@@ -139,27 +135,51 @@ class postgres_i implements db_connector
 	function borrow($isbn, $user){
 		global $dbconn;
 
-		//ここに処理が来た時点で登録済みかつ、貸出中でない書籍であること
-		$query = "INSERT INTO borrows(ID, ISBN, bDate, rDate)";
-		$query .= "VALUES ('{$user}', '{$isbn}',";
-		$query .= "'". date("Y-m-d") ."', NULL);";
+		//同じ人に同じ本を貸出しようとしていないかの判断
+		if($this->br_check($isbn, $user) == 0){
+		    pg_query($dbconn, "UPDATE bookshelf SET amount=amount-1 WHERE isbn='{$isbn}';");
+		    $query  = "INSERT INTO borrows(ID, ISBN, bDate, rDate)";
+		    $query .= "VALUES ('{$user}', '{$isbn}',";
+		    $query .= "'". date("Y-m-d") ."', NULL);";
+		    pg_query($dbconn, $query);
 
-		pg_query($dbconn, $query);
-		return pg_last_error($dbconn);
+		    return true;
+		}
+		else{
+		    return false;
+		}
+	}
+
+	function br_check($isbn, $user){
+	    global $dbconn;
+
+	    $data = pg_query($dbconn, "SELECT * FROM borrows WHERE id='{$user}' AND isbn='{$isbn}' AND rdate IS NULL;");
+	    $nums = pg_num_rows($data);
+
+	    return $nums;
 	}
 
 	function repayment($isbn, $user){
 		global $dbconn;
 
 		$rdate = date("Y-m-d");
-		pg_query($dbconn, "UPDATE borrows SET rDate='{$rdate}' WHERE ISBN='{$isbn}' AND ID='{$user}';");
-		return pg_last_error($dbconn);
+
+		if($this->br_check($isbn, $user) == 1){
+		    $stat[0] = pg_query($dbconn, "UPDATE borrows SET rDate='{$rdate}' WHERE ISBN='{$isbn}' AND ID='{$user}';");
+		    $stat[1] = pg_query($dbconn, "UPDATE bookshelf SET amount=amount+1 WHERE isbn='{$isbn}';");
+		    echo pg_last_error($dbconn);
+
+		    return true;
+		}
+		else{
+		    return false;
+		}
 	}
 
 	function lending(){
 		global $dbconn;
 
-		$value = pg_query($dbconn, "SELECT ID, ISBN, bDate FROM borrows WHERE rDate=NULL");
+		$value = pg_query($dbconn, "SELECT ID, ISBN, bdate FROM borrows WHERE rdate IS NULL");
 		if(pg_num_rows($value) == 0){	//検索結果NULL？
 			return 0;
 			exit();
@@ -174,13 +194,17 @@ class postgres_i implements db_connector
 	function serach_user($uid){
 	    global $dbconn;
 
-	    $value = pg_query($dbconn, "SELECT id FROM br_user WHERE id='{$uid}';");
-
-	    for($i=0; $i<pg_num_rows($value); $i++){
-	        $data[] = pg_fetch_row($value);
-	        return $data;
+	    $value = pg_query($dbconn, "SELECT * FROM br_user WHERE id='{$uid}';");
+	    $tmp = pg_num_rows($value);
+	    for($i=0; $i<$tmp; $i++){
+	        $data = pg_fetch_row($value);
 	    }
-        return false;
+	    if($tmp != 0){
+            return $data;
+	    }
+	    else{
+	        return false;
+	    }
 	}
 
 	function addusr($uid, $uname){

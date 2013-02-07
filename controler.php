@@ -40,7 +40,6 @@
 		} else {
 			$pr->error("冊数を追加できませんでした。");
 		}
-		$db->db_close();
 	}
 
 	else if($_POST["screen"] == "set"){
@@ -64,6 +63,36 @@
 		$pr = new draw();
 		$db = new postgres_i();
 
+        if($_POST["id"] == ""){
+            $pr->error("IDを入力してください");
+        }
+
+        else{
+            $user = $db->serach_user($_POST["id"]);
+            if(! $user){
+                $pr->error("そのユーザは存在しません");
+            }
+            else{
+                if(! $db->borrow($_POST["bisbn"], $_POST["id"])){
+                    $pr->error("貸出処理に失敗しました");
+                    exit(0);
+                }
+                $pr->info($user[1] ."で貸出処理が完了しました");
+            }
+        }
+	}
+
+	//返却処理
+	else if($_POST["screen"] == "repay"){
+	    $pr = new draw();
+	    $db = new postgres_i();
+
+	    if(! $db->repayment($_POST["isbn"], $_POST["id"])){
+	        $pr->error("返却処理に失敗しました");
+	    }
+	    else{
+	        $pr->info("返却処理が完了しました");
+	    }
 
 	}
 
@@ -110,6 +139,15 @@
 	        echo $db->rmusr($_POST["uid"]);
             $pr->info("ユーザを削除しました");
 	    }
+	}
+
+	else if($_POST["screen"] == "g_brlist"){
+	    $pr = new draw();
+	    $db = new postgres_i();
+
+	    $data = $db->lending();
+	    $head = array("利用者ID", "書籍ISBN", "貸出日");
+	    $pr->table("貸出中書籍一覧", $head, $data);
 	}
 
 	else{}
@@ -161,25 +199,34 @@
             if($sp){
                 $retu = $db->setbook($data);
                 if(! $retu){
-                    $pr->result($data, false, true);
+                    //本棚に格納されていない、貸出不可、連続登録
+                    $pr->result($data, false, false, true);
                 }
                 else{
                     $pr->error("登録に失敗しました");
                 }
 			} else {
-				$pr->result($data, false, false);
+			    //本棚に格納されていない、貸出不可、手動登録
+				$pr->result($data, false, false, false);
 			}
 
 		} else {
+		    //本棚にあった本
 			if($sp){
+			    //連続登録時には冊数を増やす
 				$db->addbook($isbn);
 				$pr->info("この本は登録済みのため、本の冊数を追加しました。");
 			} else {
-				//戻り値を表示へ
-				$pr->result($data, true, false);
+				if($data[6] <= 0){
+				    //本棚に格納されていた（在庫なし状態）、貸出不可、手動登録
+				    $pr->result($data, true, false, false);
+				}
+				else{
+				    //本棚に格納されている、貸出可、手動登録
+				    $pr->result($data, true, true, false);
+				}
 			}
 		}
-		$db->db_close();
 	}
 
 ?>

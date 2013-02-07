@@ -82,7 +82,7 @@ class draw{
 		$this->footer();
 	}
 
-	function result($data, $sw, $fast){
+	function result($data, $st, $br, $fast){
 		global $query;
 
 		if($fast){  //連続追加時の自動転送metaタグ付加
@@ -116,30 +116,38 @@ class draw{
 		$query .= "著者：". $data[3]. "<br>\n";
 		$query .= "出版日：". $data[4]. "</h3>\n";
 
-        	$query .= "<form action='' method='post'>\n";
-		if($sw){	//登録済み書籍の場合：貸出・冊数追加ボタンの表示
+        $query .= "<form action='' method='post'>\n";
+		if($br){	//登録済み書籍の場合：貸出フォームの表示
 			$query .= "<form action='' method='post'>\n";
 			$query .= "<input type='hidden' name='screen' value='bor'>\n";
 			$query .= "<input type='hidden' name='bisbn' value='{$data[0]}'>\n";
 			$query .= "あなたの識別ID：<input type='text' name='id'>\n";
 			$query .= "<input type='submit' value='この本を借りる'>\n";
-			$query .= "</form><br><br>\n";
-        		$query .= "<form action='' method='post'>\n";
+			$query .= "</form>\n";
+		}
+		if($br | $st){    //登録済み書籍で貸出できない状態の時
+		    $query .= "<hr><form action='' method='post'>\n";
+		    $query .= "<input type='hidden' name='screen' value='repay'>\n";
+		    $query .= "<input type='hidden' name='isbn' value='{$data[0]}'>\n";
+		    $query .= "返却者ID：<input type='text' name='id'>\n";
+		    $query .= "<input type='submit' value='返却'></form><hr><br><br>\n";
+
+        	$query .= "<form action='' method='post'>\n";
 			$query .= "<input type='hidden' name='screen' value='add'>\n";
 			$query .= "<input type='hidden' name='aisbn' value='{$data[0]}'>\n";
 			$query .= "<input type='submit' value='この本の冊数を増やす'>\n";
-
-        	} else {	//登録されていない書籍の場合：登録ボタンの表示
-        		$query .= "<form action='' method='post'>\n";
-            		$query .= "<input type='hidden' name='screen' value='set'>\n";
-            		$query .= "<input type='hidden' name='sdata0' value='{$data[0]}'>\n";
-            		$query .= "<input type='hidden' name='sdata1' value='{$data[1]}'>\n";
-            		$query .= "<input type='hidden' name='sdata2' value='{$data[2]}'>\n";
-            		$query .= "<input type='hidden' name='sdata3' value='{$data[3]}'>\n";
-            		$query .= "<input type='hidden' name='sdata4' value='{$data[4]}'>\n";
-            		$query .= "<input type='hidden' name='sdata5' value='{$data[5]}'>\n";
-            		$query .= "<input type='submit' value='この本を本棚に入れる'>\n";
-        	}
+        }
+        if(! $st) {	//登録されていない書籍の場合：登録ボタンの表示
+            $query .= "<form action='' method='post'>\n";
+            $query .= "<input type='hidden' name='screen' value='set'>\n";
+            $query .= "<input type='hidden' name='sdata0' value='{$data[0]}'>\n";
+            $query .= "<input type='hidden' name='sdata1' value='{$data[1]}'>\n";
+            $query .= "<input type='hidden' name='sdata2' value='{$data[2]}'>\n";
+            $query .= "<input type='hidden' name='sdata3' value='{$data[3]}'>\n";
+            $query .= "<input type='hidden' name='sdata4' value='{$data[4]}'>\n";
+            $query .= "<input type='hidden' name='sdata5' value='{$data[5]}'>\n";
+            $query .= "<input type='submit' value='この本を本棚に入れる'>\n";
+        }
 		$query .= "</form>\n";
 
 		$this->footer();
@@ -260,6 +268,28 @@ class draw{
 	    $query .= "<input type='submit' value='削除'> <input type='reset' value='リセット'>\n";
 	    $query .= "</form>\n";
 
+	    $this->footer();
+	}
+
+	function table($title, $header, $data){
+	    global $query;
+
+	    $this->base();
+
+	    $query .= "<h1>". $title ."</h1>\n";
+	    $query .="<table border='1'>\n";
+	    $query .="<tr>\n";
+	    for($i=0; $i<count($header); $i++){
+	        $query .="<td>". $header[$i] ."\n";
+	    }
+	    $query .="</tr>\n";
+	    for($i=0; $i<count($data); $i++){
+	        $query .= "<tr>\n";
+	        for($j=0; $j<count($data, COUNT_RECURSIVE)/count($data)-1; $j++){
+	            $query .= "<td>". $data[$i][$j] ."</td>\n";
+	        }
+	        $query .= "</tr>\n";
+	    }
 	    $this->footer();
 	}
 }
