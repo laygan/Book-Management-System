@@ -191,6 +191,22 @@ class postgres_i implements db_connector
 		}
 	}
 
+	function lend_hist(){
+	    global $dbconn;
+
+	    $value = pg_query($dbconn, "SELECT * FROM borrows WHERE rdate IS NOT NULL;");
+	    if(pg_num_rows($value) == 0){
+	        return 0;
+	        exit(0);
+	    }
+	    else{
+	        for($i=0; $i<pg_num_rows($value); $i++){
+	            $data[] = pg_fetch_row($value, $i);
+	        }
+	        return $data;
+	    }
+	}
+
 	function serach_user($uid){
 	    global $dbconn;
 

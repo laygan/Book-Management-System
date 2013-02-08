@@ -146,8 +146,27 @@
 	    $db = new postgres_i();
 
 	    $data = $db->lending();
-	    $head = array("利用者ID", "書籍ISBN", "貸出日");
-	    $pr->table("貸出中書籍一覧", $head, $data);
+	    if($data != 0){
+	        $head = array("利用者ID", "書籍ISBN", "貸出日");
+	        $pr->table("貸出中書籍一覧", $head, $data);
+	    }
+	    else{
+	        $pr->info("貸出中書籍はありません。");
+	    }
+	}
+
+	else if($_POST["screen"] == "g_brhist"){
+	    $pr = new draw();
+	    $db = new postgres_i();
+
+	    $data = $db->lend_hist();
+	    if($data != 0){
+	        $head = array("利用者ID", "書籍ISBN", "貸出日", "返却日");
+	        $pr->table("貸出履歴一覧", $head, $data);
+	    }
+	    else{
+	        $pr->info("貸出履歴はありません。（貸出中書籍はあるかもしれません）");
+	    }
 	}
 
 	else{}
