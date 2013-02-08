@@ -141,6 +141,7 @@
 	    }
 	}
 
+	//貸出リスト出力
 	else if($_POST["screen"] == "g_brlist"){
 	    $pr = new draw();
 	    $db = new postgres_i();
@@ -155,6 +156,7 @@
 	    }
 	}
 
+	//貸出履歴出力
 	else if($_POST["screen"] == "g_brhist"){
 	    $pr = new draw();
 	    $db = new postgres_i();
@@ -169,6 +171,26 @@
 	    }
 	}
 
+	//本の削除前画面
+	else if($_POST["screen"] == "g_rmbook"){
+	    $pr = new draw();
+	    $pr->rmbook();
+	}
+
+	//本の削除処理
+	else if($_POST["screen"] == "rmbook"){
+	    $pr = new draw();
+	    $db = new postgres_i();
+
+	    $lend = $db->br_check($_POST["isbn"], "%");
+	    if($lend == 0){
+	        $db->rmbook($_POST["isbn"]);
+	        $pr->info("削除処理が完了しました");
+	    }
+	    else{
+	        $pr->error("削除処理が失敗しました");
+	    }
+	}
 	else{}
 
 	function isbn_checker($value){

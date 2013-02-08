@@ -139,8 +139,7 @@ class postgres_i implements db_connector
 		if($this->br_check($isbn, $user) == 0){
 		    pg_query($dbconn, "UPDATE bookshelf SET amount=amount-1 WHERE isbn='{$isbn}';");
 		    $query  = "INSERT INTO borrows(ID, ISBN, bDate, rDate)";
-		    $query .= "VALUES ('{$user}', '{$isbn}',";
-		    $query .= "'". date("Y-m-d") ."', NULL);";
+		    $query .= "VALUES ('{$user}', '{$isbn}', CURRENT_TIMESTAMP, NULL);";
 		    pg_query($dbconn, $query);
 
 		    return true;
@@ -155,17 +154,15 @@ class postgres_i implements db_connector
 
 	    $data = pg_query($dbconn, "SELECT * FROM borrows WHERE id='{$user}' AND isbn='{$isbn}' AND rdate IS NULL;");
 	    $nums = pg_num_rows($data);
-
+        echo $nums;
 	    return $nums;
 	}
 
 	function repayment($isbn, $user){
 		global $dbconn;
 
-		$rdate = date("Y-m-d");
-
 		if($this->br_check($isbn, $user) == 1){
-		    $stat[0] = pg_query($dbconn, "UPDATE borrows SET rDate='{$rdate}' WHERE ISBN='{$isbn}' AND ID='{$user}';");
+		    $stat[0] = pg_query($dbconn, "UPDATE borrows SET rDate=CURRENT_TIMESTAMP WHERE bdate=(SELECT max(bdate) FROM borrows WHERE id='{$id}' AND isbn='{$isbn}');");
 		    $stat[1] = pg_query($dbconn, "UPDATE bookshelf SET amount=amount+1 WHERE isbn='{$isbn}';");
 		    echo pg_last_error($dbconn);
 

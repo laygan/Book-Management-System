@@ -231,6 +231,10 @@ class draw{
 		$query .= "<input type='hidden' name='screen' value='g_brhist'>\n";
 		$query .= "<input type='submit' value='貸出履歴表示'>：過去に貸し出した本の履歴を表示します\n";
 		$query .= "</form>\n";
+		$query .= "<form action='' method='post'>\n";
+		$query .= "<input type='hidden' name='screen' value='g_rmbook'>\n";
+		$query .= "<input type='submit' value=' 本 の 削　除 '>: 本棚に格納されている本を削除します\n";
+		$query .= "</form>\n";
 
 		$this->footer();
 	}
@@ -267,6 +271,23 @@ class draw{
 	    $query .= "<input type='hidden' name='screen' value='rmusr'>\n";
 	    $query .= "<input type='submit' value='削除'> <input type='reset' value='リセット'>\n";
 	    $query .= "</form>\n";
+
+	    $this->footer();
+	}
+
+	function rmbook(){
+	    global $query;
+
+	    $this->base();
+
+	    $query .= "<h1>本の削除</h1>\n";
+	    $query .= "<p>本棚に格納されている本のデータを削除します。</p>\n";
+	    $query .= "<p>＊注意＊<br>\n";
+	    $query .= "・貸出中の書籍は削除出来ません</p>\n";
+	    $query .= "<form action='' method='post' onSubmit='return check()'>\n";
+	    $query .="<input type='hidden' name='screen' value='rmbook'>\n";
+	    $query .="<input type='text' name='isbn'>\n";
+	    $query .="<input type='submit' value='削除'>\n";
 
 	    $this->footer();
 	}
