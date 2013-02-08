@@ -7,8 +7,8 @@ class amazon
 	戻り値：それについての情報(xml)
 	*/
 	function search($keyword) {
-		$AccesskeyID = 'AKIAIMRCA3WLKD3RSGRQ';
-		$SecretAccessKey = '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';
+		$AccesskeyID = '';
+		$SecretAccessKey = '';
 		
 		$url = 'http://ecs.amazonaws.jp/onca/xml';
 		
@@ -19,7 +19,7 @@ class amazon
 				'ResponseGroup' => 'ItemAttributes,Images',
 				'SearchIndex' => 'Books',
 				'Keywords' => $keyword,
-				'AssociateTag' => 'appasoc-22',
+				'AssociateTag' => '',
 				'Timestamp' => gmdate('Y-m-d\TH:i:s\Z') );
 		
 		ksort($params);
