@@ -162,7 +162,7 @@ class postgres_i implements db_connector
 		global $dbconn;
 
 		if($this->br_check($isbn, $user) == 1){
-		    $stat[0] = pg_query($dbconn, "UPDATE borrows SET rDate=CURRENT_TIMESTAMP WHERE bdate=(SELECT max(bdate) FROM borrows WHERE id='{$id}' AND isbn='{$isbn}');");
+		    $stat[0] = pg_query($dbconn, "UPDATE borrows SET rDate=CURRENT_TIMESTAMP WHERE bdate=(SELECT max(bdate) FROM borrows WHERE id='{$user}' AND isbn='{$isbn}');");
 		    $stat[1] = pg_query($dbconn, "UPDATE bookshelf SET amount=amount+1 WHERE isbn='{$isbn}';");
 		    echo pg_last_error($dbconn);
 
