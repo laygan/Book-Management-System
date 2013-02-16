@@ -24,7 +24,7 @@ interface db_connector
 	引数：ISBN, num(数量）
 	戻り値：正常完了；true, 異常終了：false
 	*/
-	function addbook($isbn);
+	function addbook($isbn, $num);
 
 	/*
 	データベースから本の情報を取り出す
