@@ -21,7 +21,7 @@ interface db_connector
 
 	/*
 	本の冊数をアップデートする
-	引数：ISBN
+	引数：ISBN, num(数量）
 	戻り値：正常完了；true, 異常終了：false
 	*/
 	function addbook($isbn);
@@ -48,18 +48,39 @@ interface db_connector
 	function borrow($isbn, $user);
 
 	/*
+	 * 貸出状況のチェック
+	 * 引数：isbn, 貸出者ID
+	 * 戻り値：引数のisbnで貸し出されている本の冊数
+	 */
+	function br_check($isbn, $user);
+
+	/*
 	本の返却
-	引数：isbn,user id
+	引数：isbn,user
 	戻り値：正常完了：true, 異常終了：false
 	*/
 	function repayment($isbn, $user);
 
 	/*
-	貸出状況一覧出力
+	貸出状況一覧
 	引数：無
 	戻り値：貸出一覧配列
 	*/
 	function lending();
+
+	/*
+	 * 貸出履歴一覧
+	 * 引数：なし
+	 * 戻り値：貸出一覧配列
+	 */
+    function lend_hist();
+
+    /*
+     * 貸出用ユーザID検索
+     * 引数：ユーザID
+     * 戻り値：ユーザ情報配列
+     */
+    function search_user($uid);
 
 	/*
 	 * 貸出用ユーザID追加
@@ -67,6 +88,13 @@ interface db_connector
 	 *戻り値：結果（重複の有無など)
 	 */
 	function addusr($uid, $uname);
+
+	/*
+	 * 貸出用ユーザID削除
+	 * 引数：ユーザID
+	 * 戻り値：結果
+	 */
+	function rmusr($uid);
 }
 
 $dbconn="";
@@ -104,10 +132,10 @@ class postgres_i implements db_connector
 		return pg_last_error($dbconn);
 	}
 
-	function addbook($isbn){
+	function addbook($isbn, $num){
 		global $dbconn;
 		//ここに処理が来た時点で登録済みの書籍であること
-		pg_query($dbconn, "UPDATE bookshelf SET amount=amount+1 WHERE ISBN='{$isbn}';");
+		pg_query($dbconn, "UPDATE bookshelf SET amount=amount+{$num} WHERE ISBN='{$isbn}';");
 		return pg_last_error($dbconn);
 	}
 
