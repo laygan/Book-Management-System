@@ -68,7 +68,7 @@
         }
 
         else{
-            $user = $db->serach_user($_POST["id"]);
+            $user = $db->search_user($_POST["id"]);
             if(! $user){
                 $pr->error("そのユーザは存在しません");
             }
