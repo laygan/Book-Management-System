@@ -238,7 +238,7 @@ class draw{
 		$query .= "</form>\n";
 		$query .= "<form action='' method='post'>\n";
 		$query .= "<input type='hidden' name='screen' value='g_rmbook'>\n";
-		$query .= "<input type='submit' value=' 本 の 削　除 '>: 本棚に格納されている本を削除します\n";
+		$query .= "<input type='submit' value='登録本の編集'>: 本棚に格納されている本の情報を編集・削除します\n";
 		$query .= "</form>\n";
 
 		$this->footer();

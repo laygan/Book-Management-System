@@ -155,7 +155,10 @@ class postgres_i implements db_connector
 
 	function rmbook($isbn){
 		global $dbconn;
-
+		
+		if(! $this->find($isbn)){
+			return 0;
+		}
 		pg_query($dbconn, "DELETE FROM bookshelf WHERE ISBN='{$isbn}';");
 		return pg_last_error($dbconn);
 	}
