@@ -232,7 +232,7 @@ class postgres_i implements db_connector
 	    }
 	}
 
-	function serach_user($uid){
+	function search_user($uid){
 	    global $dbconn;
 
 	    $value = pg_query($dbconn, "SELECT * FROM br_user WHERE id='{$uid}';");
@@ -251,7 +251,7 @@ class postgres_i implements db_connector
 	function addusr($uid, $uname){
 	    global $dbconn;
 
-	    if($this->serach_user($uid) == false){
+	    if($this->search_user($uid) == false){
 	        //登録
 	        $value = pg_query($dbconn, "INSERT INTO br_user(id, name) VALUES('{$uid}', '{$uname}');");
 	        return true;
@@ -266,7 +266,7 @@ class postgres_i implements db_connector
 	function rmusr($uid){
 	    global $dbconn;
 
-	    $tmp = $this->serach_user($uid);
+	    $tmp = $this->search_user($uid);
 
 	    if($tmp == false){
 	        return false;

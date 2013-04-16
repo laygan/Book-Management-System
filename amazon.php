@@ -19,7 +19,7 @@ class amazon
 				'ResponseGroup' => 'ItemAttributes,Images',
 				'SearchIndex' => 'Books',
 				'Keywords' => $keyword,
-				'AssociateTag' => '',
+				'AssociateTag' => 'dummy',
 				'Timestamp' => gmdate('Y-m-d\TH:i:s\Z') );
 		
 		ksort($params);

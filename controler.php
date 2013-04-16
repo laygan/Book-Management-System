@@ -35,7 +35,7 @@
 	else if($_POST["screen"] == "add"){
 		$pr = new draw();
 		$db = new postgres_i();
-		if(! $db->addbook($_POST["aisbn"])){
+		if(! $db->addbook($_POST["aisbn"], 1)){
 			$pr->info("冊数の追加が完了しました。");
 		} else {
 			$pr->error("冊数を追加できませんでした。");
@@ -68,7 +68,7 @@
         }
 
         else{
-            $user = $db->serach_user($_POST["id"]);
+            $user = $db->search_user($_POST["id"]);
             if(! $user){
                 $pr->error("そのユーザは存在しません");
             }

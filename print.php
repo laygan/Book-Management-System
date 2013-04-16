@@ -160,6 +160,9 @@ class draw{
 
 		$query .= "<h1>・情報・</h1><hr>\n";
 		$query .= "<p>". $str ."</p>\n";
+		$query .= "<input type='button' value='前の画面に戻る' onClick='javascript:window.history.back();'> ";
+                $query .= "<input type='button' value='最初の画面に戻る' onClick='location.href(\"http://www.tatsuya-k.net/Book-Management-System/\")'>";
+
 
 		$this->footer();
 	}
@@ -171,6 +174,8 @@ class draw{
 
 		$query .= "<h1>＃エラー＃</h1><hr>\n";
 		$query .= "<p>". $str ."</p>\n";
+		$query .= "<input type='button' value='前の画面に戻る' onClick='javascript:window.history.back();'> ";
+		$query .= "<input type='button' value='最初の画面に戻る' onClick='location.href(\"http://www.tatsuya-k.net/Book-Management-System/\")'>";
 
 		$this->footer();
 	}
